@@ -1,0 +1,63 @@
+baseURL: http://example.org/
+languageCode: en-us
+title: Javier Roberts
+
+defaultContentLanguage: en
+
+hasCJKLanguage: true
+permalinks:
+  posts: /posts/:title/
+
+paginate: 3
+
+enableGoogleAnalytics: false
+# googleAnalytics: your-google-analytics-id
+
+enableComments: false
+# disqusShortname: your-disqus-shortname
+
+markup:
+  highlight:
+    guessSyntax: true
+    style: emacs
+  tableOfContents:
+    endLevel: 3
+    ordered: false
+    startLevel: 2
+  # needed to render raw HTML (e.g. <sub>, <sup>, <kbd>, <mark>)
+  goldmark:
+    renderer:
+      unsafe: true
+
+social:
+  github: https://github.com/javiroberts
+  twitter: https://twitter.com/javiroberts
+  linkedin: https://linkedin.com/in/javiroberts
+
+params:
+  author: Javier Roberts
+  bio: Software Engineer
+  description: Javi's personal blog
+
+  showToc: true
+  enableRSS: true
+  showPowerBy: false
+  hiddenPostSummaryInHomePage: false
+  math: false
+
+  copyright: "© Copyright 2023 - Javier Roberts"
+
+  # Extra links in navigation
+  links:
+    # - name: Project
+    #   path: /project
+
+  # You can put your custom css and js to `static` directory, or use remote css and js files which start with `http://` or `https://`
+  customCSS:
+    ## e.g.
+    # - css/custom.css # local css in `static/css/custom.css`
+    # - https://example.com/custom.css # remote css
+  customJS:
+    ## e.g.
+    # - js/custom.js # local js in `static/js/custom.js`
+    # - https://example.com/custom.js # remote js
