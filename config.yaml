@@ -35,6 +35,7 @@ social:
   linkedin: https://linkedin.com/in/javiroberts
 
 params:
+  avatarLink: "/images/avatar.jpg"
   author: Javier Roberts
   bio: Software Engineer
   description: Javi's personal blog
