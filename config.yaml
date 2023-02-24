@@ -24,7 +24,6 @@ markup:
     endLevel: 3
     ordered: false
     startLevel: 2
-  # needed to render raw HTML (e.g. <sub>, <sup>, <kbd>, <mark>)
   goldmark:
     renderer:
       unsafe: true
@@ -49,8 +48,8 @@ params:
 
   # Extra links in navigation
   links:
-    # - name: Project
-    #   path: /project
+    - name: CV
+      path: /cv
 
   # You can put your custom css and js to `static` directory, or use remote css and js files which start with `http://` or `https://`
   customCSS:
