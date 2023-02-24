@@ -10,8 +10,8 @@ permalinks:
 
 paginate: 3
 
-enableGoogleAnalytics: false
-# googleAnalytics: your-google-analytics-id
+enableGoogleAnalytics: true
+googleAnalytics: G-8P5FCT44XH
 
 enableComments: false
 # disqusShortname: your-disqus-shortname
