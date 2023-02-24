@@ -12,11 +12,11 @@ body {
 
 a {
   text-decoration: none;
-  color: #5badf0;
+  color: #4d79a2;
 }
 
 a:hover {
-  color: #0366d6;
+  color: #66a0d5;
 }
 
 /* markdown content styles */
@@ -144,17 +144,17 @@ nav.navigation a {
   top: 8px;
   right: 6px;
   padding: 8px 12px;
-  color: #5badf0;
+  color: #4d79a2;
   font-size: 13px;
   line-height: 1.35;
   border-radius: 3px;
 }
 nav.navigation a:hover {
-  color: #0366d6;
+  color: #66a0d5;
 }
 
 nav.navigation a.button {
-  background: #5badf0;
+  background: #4d79a2;
   color: #fff;
   margin-left: 12px;
 }
