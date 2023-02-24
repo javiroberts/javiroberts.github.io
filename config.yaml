@@ -1,4 +1,4 @@
-baseURL: http://example.org/
+baseURL: https://vierja.me/
 languageCode: en-us
 title: Javier Roberts
 
@@ -40,9 +40,8 @@ params:
   bio: Software Engineer
   description: Javi's personal blog
 
-  showToc: true
+  showToc: false
   enableRSS: true
-  showPowerBy: false
   hiddenPostSummaryInHomePage: false
   math: false
 
