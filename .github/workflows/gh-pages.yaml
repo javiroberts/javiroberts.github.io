@@ -18,6 +18,8 @@ jobs:
           hugo-version: "latest"
 
       - name: Build
+        env:
+          HUGO_ENV: production
         run: hugo --minify
 
       - name: Deploy
