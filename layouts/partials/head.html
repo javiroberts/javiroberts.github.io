@@ -3,14 +3,16 @@
 <meta name="viewport" content="width=device-width,minimum-scale=1">
 <meta name="description" content="{{ with .Description }}{{ . }}{{ else }}{{if .IsPage}}{{ .Summary }}{{ else }}{{ with .Site.Params.description }}{{ . }}{{ end }}{{ end }}{{ end }}">
 {{ hugo.Generator }}
+
 {{ if eq (getenv "HUGO_ENV") "production" | or (eq .Site.Params.env "production")  }}
   <META NAME="ROBOTS" CONTENT="INDEX, FOLLOW">
+  {{ template "_internal/google_analytics.html" . }}
 {{ else }}
   <META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
 {{ end }}
 
+<link rel="shortcut icon" href="{{ "/images/favicon.ico" | relURL }}" type="image/x-icon" />
 <link rel="stylesheet" href="{{ "/css/style.css" | relURL }}">
-
 {{ range .Site.Params.customCSS }}
   {{ if ( or ( hasPrefix . "http://" ) ( hasPrefix . "https://" ) ) }}
     <!-- remote css -->
@@ -20,10 +22,6 @@
     <link rel="stylesheet" href="{{ $.Site.BaseURL }}{{ . }}">
   {{ end }}
 {{ end }}
-
-<link rel="shortcut icon" href="{{ "/images/favicon.ico" | relURL }}" type="image/x-icon" />
-
-{{ template "_internal/google_analytics.html" . }}
 
 {{ if .OutputFormats.Get "RSS" }}
   {{ with .OutputFormats.Get "RSS" }}
