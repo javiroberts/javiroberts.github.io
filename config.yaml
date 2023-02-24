@@ -3,14 +3,13 @@ languageCode: en-us
 title: Javier Roberts
 
 defaultContentLanguage: en
-
 hasCJKLanguage: true
+
 permalinks:
   posts: /posts/:title/
 
 paginate: 3
 
-enableGoogleAnalytics: true
 googleAnalytics: G-8P5FCT44XH
 
 enableComments: false
@@ -27,6 +26,11 @@ markup:
   goldmark:
     renderer:
       unsafe: true
+
+sitemap:
+  changefreq: monthly
+  filename: sitemap.xml
+  priority: 0.5
 
 social:
   github: https://github.com/javiroberts
