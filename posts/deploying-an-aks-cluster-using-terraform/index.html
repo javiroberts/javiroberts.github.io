@@ -1,0 +1,211 @@
+<!doctype html><html lang=en-us><head><title>Deploying an AKS Cluster Using Terraform | Javier Roberts</title><meta charset=utf-8><meta http-equiv=x-ua-compatible content="IE=edge,chrome=1"><meta name=viewport content="width=device-width,minimum-scale=1"><meta name=description content="A detailed breakdown on how to deploy an AKS cluster using Terraform."><meta name=generator content="Hugo 0.111.3"><meta name=ROBOTS content="INDEX, FOLLOW"><script async src="https://www.googletagmanager.com/gtag/js?id=G-8P5FCT44XH"></script>
+<script>var doNotTrack=!1;if(!doNotTrack){window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date),gtag("config","G-8P5FCT44XH",{anonymize_ip:!1})}</script><link rel="shortcut icon" href=/images/favicon.ico type=image/x-icon><link rel=stylesheet href=/css/style.css></head><body><nav class=navigation><a href=/><span class=arrow>←</span>Home</a>
+<a href=/posts>Archive</a>
+<a href=/tags>Tags</a>
+<a href=/about>About</a>
+<a href=/cv>CV</a>
+<a class=button href=https://vierja.me/index.xml>Subscribe</a></nav><main class=main><section id=single><h1 class=title>Deploying an AKS Cluster Using Terraform</h1><div class=tip><time datetime="2023-03-13 14:10:29 -0300 -0300">Mar 13, 2023</time>
+<span class=split>·</span>
+<span>1672 words</span>
+<span class=split>·</span>
+<span>8 minute read</span></div><aside class=toc><details><summary>Table of Contents</summary><div><nav id=TableOfContents><ul><li><a href=#requirements>Requirements</a></li><li><a href=#hands-on>Hands On</a><ul><li><a href=#create-a-storage-backend>Create a storage backend</a></li><li><a href=#create-a-resource-group>Create a resource group</a></li><li><a href=#create-the-networks>Create the networks</a></li><li><a href=#create-cluster-resources>Create cluster resources</a></li><li><a href=#wrapping-up>Wrapping up</a></li></ul></li><li><a href=#closing-statement>Closing statement</a></li></ul></nav></div></details></aside><div class=content><p>Hello and welcome to this blog post! Are you looking to deploy an AKS cluster in a simple and efficient way? Well, you&rsquo;re in luck! In this post, we will be exploring how to use Terraform to deploy an AKS cluster in just a few easy steps. By the end of this post, you will have a fully functional AKS cluster up and running, ready to deploy your applications and services. So, let&rsquo;s dive in and get started!</p><h2 id=requirements>Requirements <a href=#requirements class=anchor>🔗</a></h2><p>First, a few things that we&rsquo;ll need prior to getting started:</p><ul><li>Full access to your Azure account (this includes role and resource creation permissions)</li><li>A working installation of Azure CLI</li><li>A working installation of Terraform</li></ul><h2 id=hands-on>Hands On <a href=#hands-on class=anchor>🔗</a></h2><p>So, having all of those requirements up and running, lets get started with the process. The outline will be the following:</p><ol><li>Create a manually managed storage account for Terraform state backend</li><li>Create a resource group to assign all created resources to</li><li>Write all the networking resource definitions</li><li>Write all the Kubernetes resource definitions</li></ol><h3 id=create-a-storage-backend>Create a storage backend <a href=#create-a-storage-backend class=anchor>🔗</a></h3><p>To get started we will create an storage account to save the Terraform state to. This is a more scalable approach than just saving that backend file to your PC and somehow trying to manage it afterwards. Of course this step is predecessor to managing terraform resources, so for this, we will use Azure CLI.</p><p>The first step is to get our subscription ID, this can be done with the following command:</p><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell><span style=display:flex><span>az account show
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#666>{</span>
+</span></span><span style=display:flex><span>  <span style=color:#b44>&#34;environmentName&#34;</span>: <span style=color:#b44>&#34;AzureCloud&#34;</span>,
+</span></span><span style=display:flex><span>  <span style=color:#b44>&#34;homeTenantId&#34;</span>: &lt;your_homeTenantId&gt;,
+</span></span><span style=display:flex><span>  <span style=color:#b44>&#34;id&#34;</span>: &lt;subscriptionId&gt;,
+</span></span><span style=display:flex><span>  <span style=color:#b44>&#34;isDefault&#34;</span>: true,
+</span></span><span style=display:flex><span>  ...
+</span></span><span style=display:flex><span>  <span style=color:#b44>&#34;tenantId&#34;</span>: &lt;your_tenantId&gt;,
+</span></span><span style=display:flex><span>  <span style=color:#b44>&#34;user&#34;</span>: <span style=color:#666>{</span>
+</span></span><span style=display:flex><span>    <span style=color:#b44>&#34;name&#34;</span>: &lt;your_name&gt;,
+</span></span><span style=display:flex><span>    <span style=color:#b44>&#34;type&#34;</span>: <span style=color:#b44>&#34;user&#34;</span>
+</span></span><span style=display:flex><span>  <span style=color:#666>}</span>
+</span></span><span style=display:flex><span><span style=color:#666>}</span>
+</span></span></code></pre></div><p>From the output, get the ID field of the account you would like to use for that cluster.</p><p>After that we will create a service principal for the account. This is a special type of credentials that let you authenticate on behalf of an app instead of a regular user. For that we execute the following command:</p><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell><span style=display:flex><span>az ad sp create-for-rbac --role<span style=color:#666>=</span><span style=color:#b44>&#34;Contributor&#34;</span> -n<span style=color:#666>=</span><span style=color:#b44>&#34;&lt;your_app_name&gt;&#34;</span> --scopes<span style=color:#666>=</span><span style=color:#b44>&#34;/subscriptions/&lt;subscriptionId&gt;&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#666>{</span>
+</span></span><span style=display:flex><span>  <span style=color:#b44>&#34;appId&#34;</span>: <span style=color:#b44>&#34;&lt;appId&gt;&#34;</span>,
+</span></span><span style=display:flex><span>  <span style=color:#b44>&#34;displayName&#34;</span>: <span style=color:#b44>&#34;&lt;your_app_name&gt;&#34;</span>,
+</span></span><span style=display:flex><span>  <span style=color:#b44>&#34;password&#34;</span>: <span style=color:#b44>&#34;&lt;password&gt;&#34;</span>,
+</span></span><span style=display:flex><span>  <span style=color:#b44>&#34;tenant&#34;</span>: <span style=color:#b44>&#34;&lt;tenant&gt;&#34;</span>
+</span></span><span style=display:flex><span>  ...
+</span></span><span style=display:flex><span><span style=color:#666>}</span>
+</span></span></code></pre></div><p>From that command&rsquo;s output my recommendation is that you set an ENV file or a shell script to hold those values and keep them at hand.</p><p>So, for that let&rsquo;s create a new file called <code>env.sh</code> in the root folder of our project. Then, populate that file with the following content:</p><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell><span style=display:flex><span><span style=color:#a2f>export</span> <span style=color:#b8860b>ARM_CLIENT_ID</span><span style=color:#666>=</span><span style=color:#b44>&#34;&lt;appId&gt;&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#a2f>export</span> <span style=color:#b8860b>ARM_CLIENT_SECRET</span><span style=color:#666>=</span><span style=color:#b44>&#34;&lt;password&gt;&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#a2f>export</span> <span style=color:#b8860b>ARM_SUBSCRIPTION_ID</span><span style=color:#666>=</span><span style=color:#b44>&#34;&lt;subscriptionId&gt;&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#a2f>export</span> <span style=color:#b8860b>ARM_TENANT_ID</span><span style=color:#666>=</span><span style=color:#b44>&#34;&lt;tenant&gt;&#34;</span>
+</span></span></code></pre></div><p>This file is not the safest way to store sensitive information, but, for this project it will suffice, just make sure to add it to your <code>.gitignore</code> to avoid committing any sensitive information to your repository.</p><p>In the next step we will create a script named <code>terraform-backend.sh</code> that will be in charge of creating the backend:</p><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell><span style=display:flex><span><span style=color:#b8860b>RESOURCE_GROUP_NAME</span><span style=color:#666>=</span>tfstate
+</span></span><span style=display:flex><span><span style=color:#b8860b>STORAGE_ACCOUNT_NAME</span><span style=color:#666>=</span>tfstate<span style=color:#b8860b>$RANDOM</span>
+</span></span><span style=display:flex><span><span style=color:#b8860b>CONTAINER_NAME</span><span style=color:#666>=</span>tfstate
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#080;font-style:italic># Create resource group</span>
+</span></span><span style=display:flex><span>az group create --name <span style=color:#b8860b>$RESOURCE_GROUP_NAME</span> --location eastus
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#080;font-style:italic># Create storage account</span>
+</span></span><span style=display:flex><span>az storage account create --resource-group <span style=color:#b8860b>$RESOURCE_GROUP_NAME</span> --name <span style=color:#b8860b>$STORAGE_ACCOUNT_NAME</span> --sku Standard_LRS --encryption-services blob
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#080;font-style:italic># Create blob container</span>
+</span></span><span style=display:flex><span>az storage container create --name <span style=color:#b8860b>$CONTAINER_NAME</span> --account-name <span style=color:#b8860b>$STORAGE_ACCOUNT_NAME</span>
+</span></span></code></pre></div><p>In this case this creates it in the <code>eastus</code> region, but you can choose your own. Just make sure that it&rsquo;s the same region you will use for the rest of the project. After executing this we will be ready for the final step of this section, the initial Terraform definition. Write down your command outputs, they will come in handy on the next step.</p><p>Create a file named <code>main.tf</code> in your root dir. Here we will add some initial definitions:</p><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-terraform data-lang=terraform><span style=display:flex><span>terraform {
+</span></span><span style=display:flex><span>  backend <span style=color:#b44>&#34;azurerm&#34;</span> {
+</span></span><span style=display:flex><span>    <span style=color:#b44>resource_group_name</span>  = <span style=color:#b44>&#34;tfstate&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#b44>storage_account_name</span> = <span style=color:#b44>&#34;tfstate18325&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#b44>container_name</span>       = <span style=color:#b44>&#34;tfstate&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#b44>key</span>                  = <span style=color:#b44>&#34;terraform.tfstate&#34;</span>
+</span></span><span style=display:flex><span>  }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>  required_providers {
+</span></span><span style=display:flex><span>    <span style=color:#b44>azurerm</span> = {
+</span></span><span style=display:flex><span>      <span style=color:#b44>source</span>  = <span style=color:#b44>&#34;hashicorp/azurerm&#34;</span>
+</span></span><span style=display:flex><span>      <span style=color:#b44>version</span> = <span style=color:#b44>&#34;~&gt; 3.0.2&#34;</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>  }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>  <span style=color:#b44>required_version</span> = <span style=color:#b44>&#34;&gt;= 1.1.0&#34;</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span><span style=color:#a2f;font-weight:700>
+</span></span></span><span style=display:flex><span><span style=color:#a2f;font-weight:700>provider</span> <span style=color:#b44>&#34;azurerm&#34;</span> {
+</span></span><span style=display:flex><span>  features {}
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>In the main <code>terraform { ... }</code> block we are defining the general config for the Terraform, there we are adding our backend configuration.</p><p>If you used the script provided in the previous step, the only thing you will have to replace is the <code>storage_account_name</code> with your own randomly generated name. Otherwise, input your own values.</p><p>The <code>provider "azurerm" { ... }</code> block, tells terraform to install that dependency, this way we can directly manage azure infrastructure.</p><blockquote><p><code>azurerm</code> provider takes it&rsquo;s config values from the variables prefixed with <code>ARM_</code>. This variables are set in the <code>env.sh</code> script that we previously created.</p></blockquote><p>Once everything is set up you can run <code>terraform init</code> command to initialize backend storage and install the plugins.</p><blockquote><p>Two commands that will be very useful to keep your project consistent and readable, are <code>terraform fmt</code> to format the code, and <code>terraform validate</code> to lint and validate the files.
+My recommendation is that you run them periodically. They&rsquo;ll make your life easier!</p></blockquote><h3 id=create-a-resource-group>Create a resource group <a href=#create-a-resource-group class=anchor>🔗</a></h3><p>Let&rsquo;s start by adding the following variables to our <code>env.sh</code> file:</p><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell><span style=display:flex><span><span style=color:#666>{</span>...<span style=color:#666>}</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#a2f>export</span> <span style=color:#b8860b>TF_VAR_LOCATION</span><span style=color:#666>=</span><span style=color:#b44>&#34;eastus&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#a2f>export</span> <span style=color:#b8860b>TF_VAR_RESOURCE_GROUP_NAME</span><span style=color:#666>=</span><span style=color:#b44>&#34;your-resource-group&#34;</span>
+</span></span></code></pre></div><p><em>Note that you can customize with your own values.</em></p><p>After that we will create a file named <code>variables.tf</code> with the following content:</p><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-terraform data-lang=terraform><span style=display:flex><span><span style=color:#a2f;font-weight:700>variable</span> <span style=color:#b44>&#34;LOCATION&#34;</span> {
+</span></span><span style=display:flex><span>  <span style=color:#b44>type</span>        = string
+</span></span><span style=display:flex><span>  <span style=color:#b44>description</span> = <span style=color:#b44>&#34;Azure main working location. Can be set through ENV or a vars file.&#34;</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span><span style=color:#a2f;font-weight:700>
+</span></span></span><span style=display:flex><span><span style=color:#a2f;font-weight:700>variable</span> <span style=color:#b44>&#34;RESOURCE_GROUP_NAME&#34;</span> {
+</span></span><span style=display:flex><span>  <span style=color:#b44>type</span>        = string
+</span></span><span style=display:flex><span>  <span style=color:#b44>description</span> = <span style=color:#b44>&#34;Azure resource group name. Can be set through ENV or a vars file.&#34;</span>
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><blockquote><p>You might have noticed that the env variables previously defined are prefixed with <code>TF_VAR_</code>. This is the way terraform has to auto populate it&rsquo;s internal variables with shell environment variables.
+Another alternative is using a <code>.tfvars</code> file.</p></blockquote><p>With all of these set we can proceed to define our resource group in our <code>main.tf</code>, just append the following:</p><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-terraform data-lang=terraform><span style=display:flex><span>{...}
+</span></span><span style=display:flex><span><span style=color:#a2f;font-weight:700>
+</span></span></span><span style=display:flex><span><span style=color:#a2f;font-weight:700>resource</span> <span style=color:#b44>&#34;azurerm_resource_group&#34;</span> <span style=color:#b44>&#34;yourname&#34;</span> {
+</span></span><span style=display:flex><span>  <span style=color:#b44>name</span>     = <span style=color:#a2f>var</span>.RESOURCE_GROUP_NAME
+</span></span><span style=display:flex><span>  <span style=color:#b44>location</span> = <span style=color:#a2f>var</span>.LOCATION
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>If you wish you can run <code>terraform plan</code> to see how you are doing so far, just remember to source your <code>env.sh</code> first!</p><h3 id=create-the-networks>Create the networks <a href=#create-the-networks class=anchor>🔗</a></h3><p><em>This section is completely optional. If you don&rsquo;t want to do it, you can skip to the next one though it is a good practice to define as much of the infrastructure as you can through terraform files.</em></p><p>First let&rsquo;s add some variables to our <code>env.sh</code>:</p><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell><span style=display:flex><span><span style=color:#666>{</span>...<span style=color:#666>}</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#a2f>export</span> <span style=color:#b8860b>TF_VAR_VIRTUAL_NETWORK_NAME</span><span style=color:#666>=</span><span style=color:#b44>&#34;your-virtual-network&#34;</span>
+</span></span></code></pre></div><p>And update our <code>variables.tf</code> accordingly:</p><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>{...}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>variable &#34;VIRTUAL_NETWORK_NAME&#34; {
+</span></span><span style=display:flex><span>  type        = string
+</span></span><span style=display:flex><span>  description = &#34;Azure virtual network name. Can be set through ENV or a vars file.&#34;
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>After that let&rsquo;s define some resources updating our <code>main.tf</code> file:</p><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-terraform data-lang=terraform><span style=display:flex><span>{...}
+</span></span><span style=display:flex><span><span style=color:#a2f;font-weight:700>
+</span></span></span><span style=display:flex><span><span style=color:#a2f;font-weight:700>resource</span> <span style=color:#b44>&#34;azurerm_virtual_network&#34;</span> <span style=color:#b44>&#34;yourname&#34;</span> {
+</span></span><span style=display:flex><span>  <span style=color:#b44>name</span>                = <span style=color:#a2f>var</span>.VIRTUAL_NETWORK_NAME
+</span></span><span style=display:flex><span>  <span style=color:#b44>location</span>            = <span style=color:#a2f>var</span>.LOCATION
+</span></span><span style=display:flex><span>  <span style=color:#b44>resource_group_name</span> = <span style=color:#a2f>var</span>.RESOURCE_GROUP_NAME
+</span></span><span style=display:flex><span>  <span style=color:#b44>address_space</span>       = [<span style=color:#b44>&#34;10.0.0.0/8&#34;</span>]
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>  <span style=color:#b44>depends_on</span> = [
+</span></span><span style=display:flex><span>    azurerm_resource_group.vrj,
+</span></span><span style=display:flex><span>  ]
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span><span style=color:#a2f;font-weight:700>
+</span></span></span><span style=display:flex><span><span style=color:#a2f;font-weight:700>resource</span> <span style=color:#b44>&#34;azurerm_subnet&#34;</span> <span style=color:#b44>&#34;yourname-bastion-subnet&#34;</span> {
+</span></span><span style=display:flex><span>  <span style=color:#b44>name</span>                 = <span style=color:#b44>&#34;bastion-subnet&#34;</span>
+</span></span><span style=display:flex><span>  <span style=color:#b44>resource_group_name</span>  = <span style=color:#a2f>var</span>.RESOURCE_GROUP_NAME
+</span></span><span style=display:flex><span>  <span style=color:#b44>virtual_network_name</span> = <span style=color:#a2f>var</span>.VIRTUAL_NETWORK_NAME
+</span></span><span style=display:flex><span>  <span style=color:#b44>address_prefixes</span>     = [<span style=color:#b44>&#34;10.0.168.0/24&#34;</span>]
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>  <span style=color:#b44>depends_on</span> = [
+</span></span><span style=display:flex><span>    azurerm_resource_group.vrj,
+</span></span><span style=display:flex><span>    azurerm_virtual_network.vrj,
+</span></span><span style=display:flex><span>  ]
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span><span style=color:#a2f;font-weight:700>
+</span></span></span><span style=display:flex><span><span style=color:#a2f;font-weight:700>resource</span> <span style=color:#b44>&#34;azurerm_subnet&#34;</span> <span style=color:#b44>&#34;yourname-aks-subnet&#34;</span> {
+</span></span><span style=display:flex><span>  <span style=color:#b44>name</span>                 = <span style=color:#b44>&#34;aks-subnet&#34;</span>
+</span></span><span style=display:flex><span>  <span style=color:#b44>resource_group_name</span>  = <span style=color:#a2f>var</span>.RESOURCE_GROUP_NAME
+</span></span><span style=display:flex><span>  <span style=color:#b44>virtual_network_name</span> = <span style=color:#a2f>var</span>.VIRTUAL_NETWORK_NAME
+</span></span><span style=display:flex><span>  <span style=color:#b44>address_prefixes</span>     = [<span style=color:#b44>&#34;10.240.0.0/16&#34;</span>]
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>  <span style=color:#b44>depends_on</span> = [
+</span></span><span style=display:flex><span>    azurerm_resource_group.vrj,
+</span></span><span style=display:flex><span>    azurerm_virtual_network.vrj,
+</span></span><span style=display:flex><span>  ]
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>Here, we create a virtual network with a <code>/8</code> CIDR and two subnets, one for bastion/admin purpose with a <code>/24</code> address space and another one with a <code>/16</code> CIDR for Kubernetes.</p><p>At this point we are able to run <code>terraform fmt</code>, <code>terraform validate</code> and <code>terraform plan</code> to get a hold on our progress.</p><h3 id=create-cluster-resources>Create cluster resources <a href=#create-cluster-resources class=anchor>🔗</a></h3><p>At this step we will create the cluster resources. For this we will follow the same mechanics as before. Add variables to our env, add variable definitions to terraform, and update our main terraform file.</p><p>Let&rsquo;s start by defining the environment variables in <code>env.sh</code>:</p><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell><span style=display:flex><span><span style=color:#666>{</span>...<span style=color:#666>}</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#a2f>export</span> <span style=color:#b8860b>TF_VAR_ARM_CLIENT_ID</span><span style=color:#666>=</span><span style=color:#b68;font-weight:700>${</span><span style=color:#b8860b>ARM_CLIENT_ID</span><span style=color:#b68;font-weight:700>}</span>
+</span></span><span style=display:flex><span><span style=color:#a2f>export</span> <span style=color:#b8860b>TF_VAR_ARM_CLIENT_SECRET</span><span style=color:#666>=</span><span style=color:#b68;font-weight:700>${</span><span style=color:#b8860b>ARM_CLIENT_SECRET</span><span style=color:#b68;font-weight:700>}</span>
+</span></span><span style=display:flex><span><span style=color:#a2f>export</span> <span style=color:#b8860b>TF_VAR_KUBERNETES_CLUSTER_NAME</span><span style=color:#666>=</span><span style=color:#b44>&#34;your-aks&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#a2f>export</span> <span style=color:#b8860b>TF_VAR_KUBERNETES_DNS_PREFIX</span><span style=color:#666>=</span><span style=color:#b44>&#34;your-k8s&#34;</span>
+</span></span></code></pre></div><p>Did you notice the first two variables we added? They are taking their value from the previously defined <code>ARM</code> values, this is for more consistency between different variables.</p><p>Next, we will add those variables to our <code>variables.tf</code>, so that we make them available for Terraform.</p><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-terraform data-lang=terraform><span style=display:flex><span>{...}
+</span></span><span style=display:flex><span><span style=color:#a2f;font-weight:700>
+</span></span></span><span style=display:flex><span><span style=color:#a2f;font-weight:700>variable</span> <span style=color:#b44>&#34;ARM_CLIENT_ID&#34;</span> {
+</span></span><span style=display:flex><span>  <span style=color:#b44>type</span>        = string
+</span></span><span style=display:flex><span>  <span style=color:#b44>description</span> = <span style=color:#b44>&#34;Azure Client ID. Should be set through ENV.&#34;</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span><span style=color:#a2f;font-weight:700>
+</span></span></span><span style=display:flex><span><span style=color:#a2f;font-weight:700>variable</span> <span style=color:#b44>&#34;ARM_CLIENT_SECRET&#34;</span> {
+</span></span><span style=display:flex><span>  <span style=color:#b44>type</span>        = string
+</span></span><span style=display:flex><span>  <span style=color:#b44>description</span> = <span style=color:#b44>&#34;Azure Client Secret. Should be set through ENV.&#34;</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span><span style=color:#a2f;font-weight:700>
+</span></span></span><span style=display:flex><span><span style=color:#a2f;font-weight:700>variable</span> <span style=color:#b44>&#34;KUBERNETES_CLUSTER_NAME&#34;</span> {
+</span></span><span style=display:flex><span>  <span style=color:#b44>type</span>        = string
+</span></span><span style=display:flex><span>  <span style=color:#b44>description</span> = <span style=color:#b44>&#34;K8s cluster name. Can be set through ENV or a vars file.&#34;</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span><span style=color:#a2f;font-weight:700>
+</span></span></span><span style=display:flex><span><span style=color:#a2f;font-weight:700>variable</span> <span style=color:#b44>&#34;KUBERNETES_DNS_PREFIX&#34;</span> {
+</span></span><span style=display:flex><span>  <span style=color:#b44>type</span>        = string
+</span></span><span style=display:flex><span>  <span style=color:#b44>description</span> = <span style=color:#b44>&#34;K8s DNS prefix. Can be set through ENV or a vars file.&#34;</span>
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>And to our <code>main.tf</code> we will append the following block:</p><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-terraform data-lang=terraform><span style=display:flex><span>{...}
+</span></span><span style=display:flex><span><span style=color:#a2f;font-weight:700>
+</span></span></span><span style=display:flex><span><span style=color:#a2f;font-weight:700>resource</span> <span style=color:#b44>&#34;azurerm_kubernetes_cluster&#34;</span> <span style=color:#b44>&#34;yourname&#34;</span> {
+</span></span><span style=display:flex><span>  <span style=color:#b44>name</span>                              = <span style=color:#a2f>var</span>.KUBERNETES_CLUSTER_NAME
+</span></span><span style=display:flex><span>  <span style=color:#b44>location</span>                          = <span style=color:#a2f>var</span>.LOCATION
+</span></span><span style=display:flex><span>  <span style=color:#b44>resource_group_name</span>               = <span style=color:#a2f>var</span>.RESOURCE_GROUP_NAME
+</span></span><span style=display:flex><span>  <span style=color:#b44>dns_prefix</span>                        = <span style=color:#a2f>var</span>.KUBERNETES_DNS_PREFIX
+</span></span><span style=display:flex><span>  <span style=color:#b44>role_based_access_control_enabled</span> = <span style=color:#a2f;font-weight:700>true</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>  default_node_pool {
+</span></span><span style=display:flex><span>    <span style=color:#b44>name</span>            = <span style=color:#b44>&#34;default&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#b44>node_count</span>      = <span style=color:#666>3</span>
+</span></span><span style=display:flex><span>    <span style=color:#b44>vm_size</span>         = <span style=color:#b44>&#34;Standard_B2s&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#b44>os_disk_size_gb</span> = <span style=color:#666>10</span>
+</span></span><span style=display:flex><span>    <span style=color:#b44>vnet_subnet_id</span> = azurerm_subnet.yourname<span style=color:#666>-</span>aks<span style=color:#666>-</span>subnet.id<span style=color:#080;font-style:italic> # omit if not defined
+</span></span></span><span style=display:flex><span><span style=color:#080;font-style:italic></span>  }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>  linux_profile {
+</span></span><span style=display:flex><span>    <span style=color:#b44>admin_username</span> = <span style=color:#b44>&#34;&lt;yourusername&gt;&#34;</span>
+</span></span><span style=display:flex><span>    ssh_key {
+</span></span><span style=display:flex><span>      <span style=color:#b44>key_data</span> = <span style=color:#b44>&#34;ssh-rsa &lt;yourkeydata&gt;&#34;</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>  }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>  service_principal {
+</span></span><span style=display:flex><span>    <span style=color:#b44>client_id</span>     = <span style=color:#a2f>var</span>.ARM_CLIENT_ID
+</span></span><span style=display:flex><span>    <span style=color:#b44>client_secret</span> = <span style=color:#a2f>var</span>.ARM_CLIENT_SECRET
+</span></span><span style=display:flex><span>  }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>  <span style=color:#b44>tags</span> = {
+</span></span><span style=display:flex><span>    <span style=color:#b44>environment</span> = <span style=color:#b44>&#34;testing&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#b44>iaac</span>        = <span style=color:#a2f;font-weight:700>true</span>
+</span></span><span style=display:flex><span>  }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>  <span style=color:#b44>depends_on</span> = [
+</span></span><span style=display:flex><span>    azurerm_resource_group.vrj,
+</span></span><span style=display:flex><span>    azurerm_virtual_network.vrj,
+</span></span><span style=display:flex><span>    azurerm_subnet.vrj<span style=color:#666>-</span>aks<span style=color:#666>-</span>subnet,
+</span></span><span style=display:flex><span>  ]
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>Let&rsquo;s break down the aforementioned block.</p><ul><li>First, we set the general params for the cluster such as name, region, etc</li><li>Then we define a <code>node_pool</code> and it&rsquo;s characteristics. This has 3 nodes with 10GB each for OS disk. And most importantly, ties your node pool to it&rsquo;s subnet if defined.</li><li>Afterwards through <code>linux_profile</code> we provide username and credentials to be able to log in to the nodes if needed.</li><li>At last we provide the same <code>service_principal</code> we&rsquo;ve been using so far.</li></ul><h3 id=wrapping-up>Wrapping up <a href=#wrapping-up class=anchor>🔗</a></h3><p>You can see the whole files in the following <a href=https://gist.github.com/javiroberts/9d45297cb05b64b8353144259a46a09b target=_blank rel=noopener>gist</a>. If your&rsquo;s are OK you can run the following commands:</p><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell><span style=display:flex><span>terraform fmt
+</span></span><span style=display:flex><span>terraform validate
+</span></span><span style=display:flex><span>terraform apply
+</span></span></code></pre></div><p>If everything went smooth your cluster should be up and running and you can configure <code>.kube/config</code> with the following command:</p><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>az aks get-credentials --resource-group $TF_VAR_RESOURCE_GROUP_NAME --name $TF_VAR_KUBERNETES_CLUSTER_NAME
+</span></span></code></pre></div><blockquote><p>Keep in mind that if your <code>depends_on</code> sections are not properly set your cluster will fail it&rsquo;s creation.
+Always remember to source your <code>env.sh</code>!</p></blockquote><h2 id=closing-statement>Closing statement <a href=#closing-statement class=anchor>🔗</a></h2><p>So far we&rsquo;ve created a cluster and configured everything with terraform. In the next post we will install ArgoCD and create some CI/CD pipelines implementing GitOps methodology.</p><p>Thanks for reading this post! If you liked it or want to contact me, give me a follow in any of my social media or shoot me an email.</p><p>See you in the next one!</p></div><div class=tags><a href=https://vierja.me/tags/development>development</a>
+<a href=https://vierja.me/tags/devops>devops</a>
+<a href=https://vierja.me/tags/infrastructure>infrastructure</a></div></section></main><footer id=footer><div id=social><a class=symbol href=https://github.com/javiroberts rel=me target=_blank><svg fill="#bbb" width="28" height="28" viewBox="0 0 72 72" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><title>Github</title><desc>Created with Sketch.</desc><defs/><g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><g id="Social-Icons---Rounded-Black" transform="translate(-264.000000, -939.000000)"><g id="Github" transform="translate(264.000000, 939.000000)"><path d="M8 72H64c4.418278.0 8-3.581722 8-8V8c0-4.418278-3.581722-8-8-8H8c-4.418278 811624501e-24-8 3.581722-8 8V64c541083001e-24 4.418278 3.581722 8 8 8z" id="Rounded" fill="#bbb"/><path d="M35.9985 13C22.746 13 12 23.7870921 12 37.096644c0 10.6440272 6.876 19.6751861 16.4145 22.8617681C29.6145 60.1797862 30.0525 59.4358488 30.0525 58.7973276 30.0525 58.2250681 30.0315 56.7100863 30.0195 54.6996482c-6.6765 1.4562499-8.085-3.2302544-8.085-3.2302544-1.0905-2.7829884-2.664-3.5239139-2.664-3.5239139C17.091 46.4500754 19.4355 46.4801943 19.4355 46.4801943c2.4075.1701719 3.675 2.4833051 3.675 2.4833051 2.142 3.6820383 5.6175 2.6188404 6.9855 2.0014024C30.3135 49.4077535 30.9345 48.3460615 31.62 47.7436831 26.2905 47.1352808 20.688 45.0691228 20.688 35.8361671c0-2.6308879.9345-4.781379 2.4705-6.4665327C22.911 28.7597262 22.0875 26.3110578 23.3925 22.9934585c0 0 2.016-.6475568 6.6 2.4697516C31.908 24.9285993 33.96 24.6620468 36.0015 24.6515052 38.04 24.6620468 40.0935 24.9285993 42.0105 25.4632101c4.581-3.1173084 6.5925-2.4697516 6.5925-2.4697516C49.9125 26.3110578 49.089 28.7597262 48.8415 29.3696344 50.3805 31.0547881 51.309 33.2052792 51.309 35.8361671c0 9.2555448-5.6115 11.29309-10.9575 11.8894446.860999999999997.7439374 1.629 2.2137408 1.629 4.4621184C41.9805 55.4089489 41.9505 58.0067059 41.9505 58.7973276 41.9505 59.4418726 42.3825 60.1918338 43.6005 59.9554002 53.13 56.7627944 60 47.7376593 60 37.096644 60 23.7870921 49.254 13 35.9985 13" fill="#fff"/></g></g></g></svg></a><a class=symbol href=https://linkedin.com/in/javiroberts rel=me target=_blank><svg width="28" height="28" fill="#bbb" viewBox="0 0 500 500"><g fill="none" fill-rule="evenodd"><rect width="500" height="500" fill="#bbb" rx="50"/><path fill="#fff" d="M154.703 100.183c-19.121.0-34.689 15.565-34.703 34.701.0 19.136 15.568 34.704 34.703 34.704 19.128.0 34.688-15.568 34.688-34.704.0-19.134-15.561-34.701-34.688-34.701zm26.045 83.348h-52.094a4.488 4.488.0 00-4.488 4.489v167.675a4.488 4.488.0 004.488 4.488h52.093a4.49 4.49.0 004.489-4.488V188.02a4.486 4.486.0 00-4.488-4.489zm133.176-1.974c-19.064.0-35.817 5.805-46.04 15.271v-8.808c0-2.48-2.01-4.489-4.489-4.489h-49.971a4.489 4.489.0 00-4.489 4.489v167.675a4.488 4.488.0 004.489 4.488h52.044a4.49 4.49.0 004.489-4.488v-82.957c0-23.802 4.378-38.555 26.227-38.555 21.526.026 23.137 15.846 23.137 39.977v81.535a4.489 4.489.0 004.49 4.488h52.068a4.489 4.489.0 004.488-4.488v-91.977c-.001-38.253-7.553-82.161-66.443-82.161z"/></g></svg></a><a class=symbol href=https://twitter.com/javiroberts rel=me target=_blank><svg fill="#bbb" width="28" height="28" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="438.536" height="438.536" viewBox="0 0 438.536 438.536" style="enable-background:new 0 0 438.536 438.536"><g><path d="M414.41 24.123C398.333 8.042 378.963.0 356.315.0H82.228C59.58.0 40.21 8.042 24.126 24.123 8.045 40.207.003 59.576.003 82.225v274.084c0 22.647 8.042 42.018 24.123 58.102 16.084 16.084 35.454 24.126 58.102 24.126h274.084c22.648.0 42.018-8.042 58.095-24.126 16.084-16.084 24.126-35.454 24.126-58.102V82.225C438.532 59.576 430.49 40.204 414.41 24.123zM335.471 168.735c.191 1.713.288 4.278.288 7.71.0 15.989-2.334 32.025-6.995 48.104-4.661 16.087-11.8 31.504-21.416 46.254-9.606 14.749-21.074 27.791-34.396 39.115-13.325 11.32-29.311 20.365-47.968 27.117-18.648 6.762-38.637 10.143-59.953 10.143-33.116.0-63.76-8.952-91.931-26.836 4.568.568 9.329.855 14.275.855 27.6.0 52.439-8.565 74.519-25.7-12.941-.185-24.506-4.179-34.688-11.991-10.185-7.803-17.273-17.699-21.271-29.691 4.947.76 8.658 1.137 11.132 1.137 4.187.0 9.042-.76 14.56-2.279-13.894-2.669-25.598-9.562-35.115-20.697-9.519-11.136-14.277-23.84-14.277-38.114v-.571c10.085 4.755 19.602 7.229 28.549 7.422-17.321-11.613-25.981-28.265-25.981-49.963.0-10.66 2.758-20.747 8.278-30.264 15.035 18.464 33.311 33.213 54.816 44.252 21.507 11.038 44.54 17.227 69.092 18.558-.95-3.616-1.427-8.186-1.427-13.704.0-16.562 5.853-30.692 17.56-42.399 11.703-11.706 25.837-17.561 42.394-17.561 17.515.0 32.079 6.283 43.688 18.846 13.134-2.474 25.892-7.33 38.26-14.56-4.757 14.652-13.613 25.788-26.55 33.402 12.368-1.716 23.88-4.95 34.537-9.708C357.458 149.793 347.462 160.166 335.471 168.735z"/></g></svg></a></div><div class=copyright>© Copyright 2023 - Javier Roberts</div></footer></body></html>
