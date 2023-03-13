@@ -41,25 +41,20 @@ params:
   author: Javier Roberts
   bio: Software Engineer
   description: Javi's personal blog
+  copyright: "© Copyright 2023 - Javier Roberts"
 
-  showToc: false
+  showToc: true
   enableRSS: true
   hiddenPostSummaryInHomePage: false
   math: false
 
-  copyright: "© Copyright 2023 - Javier Roberts"
-
-  # Extra links in navigation
   links:
     - name: CV
       path: /cv
 
-  # You can put your custom css and js to `static` directory, or use remote css and js files which start with `http://` or `https://`
   customCSS:
-    ## e.g.
     # - css/custom.css # local css in `static/css/custom.css`
     # - https://example.com/custom.css # remote css
   customJS:
-    ## e.g.
     # - js/custom.js # local js in `static/js/custom.js`
     # - https://example.com/custom.js # remote js

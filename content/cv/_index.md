@@ -5,8 +5,6 @@ draft: false
 summary: "Take a look at my resume."
 ---
 
-# Software Engineer
-
 > I'm a seasoned Software Engineer with over 7 years of experience in developing and leading product teams. Proficient in Python, Javascript and Go. Experienced in working with relational and non-relational databases and message queues. I have proven hands on experience with Kubernetes, ArgoCD, Docker and Terraform. Strong technical background, leadership skills, team player, great communication, and open-minded approach.
 >
 > Comfortable working on customer facing positions. Proven experience managing accounts such as Claro Argentina, AT&T, America Movil Brasil, Cisco, GSM Towers (Norway).
