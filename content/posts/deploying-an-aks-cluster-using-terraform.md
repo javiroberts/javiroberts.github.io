@@ -207,7 +207,7 @@ resource "azurerm_subnet" "yourname-bastion-subnet" {
   name                 = "bastion-subnet"
   resource_group_name  = var.RESOURCE_GROUP_NAME
   virtual_network_name = var.VIRTUAL_NETWORK_NAME
-  address_prefixes     = ["10.0.168.0/24"]
+  address_prefixes     = ["10.88.0.0/16"]
 
   depends_on = [
     azurerm_resource_group.vrj,
@@ -219,7 +219,7 @@ resource "azurerm_subnet" "yourname-aks-subnet" {
   name                 = "aks-subnet"
   resource_group_name  = var.RESOURCE_GROUP_NAME
   virtual_network_name = var.VIRTUAL_NETWORK_NAME
-  address_prefixes     = ["10.240.0.0/16"]
+  address_prefixes     = ["10.77.0.0/16"]
 
   depends_on = [
     azurerm_resource_group.vrj,
@@ -227,7 +227,7 @@ resource "azurerm_subnet" "yourname-aks-subnet" {
   ]
 }
 ```
-Here, we create a virtual network with a `/8` CIDR and two subnets, one for bastion/admin purpose with a `/24` address space and another one with a `/16` CIDR for Kubernetes.
+Here, we create a virtual network with a `/8` CIDR and two subnets, one for bastion/admin purpose with a `10.88.x.x/16` address space and another one with a `10.77.x.x/16` CIDR for Kubernetes.
 
 At this point we are able to run `terraform fmt`, `terraform validate` and `terraform plan` to get a hold on our progress.
 
