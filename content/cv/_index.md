@@ -5,27 +5,37 @@ draft: false
 summary: "Take a look at my resume."
 ---
 
-> I'm a seasoned Software Engineer with over 7 years of experience in developing and leading product teams. Proficient in Python, Javascript and Go. Experienced in working with relational and non-relational databases and message queues. I have proven hands on experience with Kubernetes, ArgoCD, Docker and Terraform. Strong technical background, leadership skills, team player, great communication, and open-minded approach.
->
-> Comfortable working on customer facing positions. Proven experience managing accounts such as Claro Argentina, AT&T, America Movil Brasil, Cisco, GSM Towers (Norway).
+## Abstract
+
+> - Over 7 years of experience in leading product teams and optimizing company operations.
+> - Proficient in Python, Javascript, and Golang, with expertise in technology and cloud infrastructure.
+> - Strong technical background and leadership skills with excellent communication abilities.
+> - Sold to  and managed customers such as Claro, AT&T and Cisco, amongst others.
+> - Led and structured 10x revenue growth for 2 consecutive years in the startup I funded.
+
 
 ## Work History
 
 ### Wilab (Jan 2022 - Present) - COO & Head of Architecture
 
-- Optimized the company’s day to day operation by creating an internal operations platform in Python using the Django framework. Deployed solution with Kubernetes over Terraform defined clusters.
-- Led the company's architectural decisions as Head of Architecture, ensuring that software development aligns with company guidelines.
+- Led 2 consecutive years of 10x revenue growth operations. Designed and implemented processes, KPIs, team cells and internal tools to ensure a healthy growth.
+- Provided visionary leadership as Head of Architecture, ensuring that all software development aligns with company objectives and guidelines.
+
+### Alchemist Accelerator (Aug 2021 - Feb 2022) - Business Management
+
+- Took part in the batch 29 of Alchemist Accelerator. Lived for almost a year in San Francisco, CA.
+- Received training in Management, Fundraising, Staffing, Sales and Marketing.
+- At the end of the process we went into a successful investment round with our company.
 
 ### Wilab (Jan 2018 - Jan 2022) - CTO & Product Manager
 
-- Led the product development team in delivering a product using Go, Python, Javascript (React, Next.JS, Node), Kafka, NATS, Elasticsearch, and PostgreSQL.
-- Led platform migration from on-premise Docker (compose and swarm) to AWS hosted Kubernetes with GitOps pipelines (ArgoCD).
-- Provided support and developed critical features to meet project deadlines, and supported customer meetings.
+- Led the product development team to deliver a cutting-edge product using a range of technologies, including Golang, Python, Javascript, Kafka, NATS, Elasticsearch, and PostgreSQL.
+- Obtained new project management skills by providing support and developing critical features to meet project deadlines, and engaging with customers in meetings.
 
-### AWM (Nov 2016 - Mar 2018) - Software Engineer
+### AWM (Nov 2016 - Mar 2018) - Software Engineering Manager
 
-- Developed front-end and back-end services and APIs to handle real-time communication between hardware and the cloud using AWS, Kubernetes, Elasticsearch, MongoDB, Python, and Javascript.
-- Built data collection gateways with offline backup capabilities and a gateway to ingest information in cloud servers.
+- Managed a team of software engineers and developed front-end and back-end services and APIs to handle real-time communication between hardware and the cloud using AWS, Kubernetes, Elasticsearch, MongoDB, Python, and Javascript.
+- Spearheaded the creation of data collection gateways with offline backup capabilities, and a gateway to ingest information in cloud servers.
 
 ### The Fuzzy Fish (Apr 2016 - Nov 2016) - Full Stack Developer
 
