@@ -39,8 +39,8 @@ social:
 params:
   avatarLink: "/images/avatar.jpg"
   author: Javier Roberts
-  bio: Software Engineer
-  description: Javi's personal blog
+  bio: Software Engineer | CTO @ Wúru
+  description: Javier's personal blog
   copyright: "© Copyright 2023 - Javier Roberts"
 
   showToc: true

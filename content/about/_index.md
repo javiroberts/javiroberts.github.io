@@ -5,12 +5,12 @@ draft: false
 summary: "About me and this blog project."
 ---
 
-# Hello, world!
+# About me
 
-I'm Javi a Software Engineer from Argentina.
+I'm Javier, a Software Engineer from Argentina.
 
-I'm currently working on the startup that I co-founded, **Wilab**. We work on Javascript, Go and Python, we use lots of cutting edge tools and methodologies.
+I'm currently working as [Wuru's](https://wuru.ai) CTO.
 
 I love trail running 🏃, skiing ⛷️, sailing ⛵ and photography 📷.
 
-This is an initial post, and here I intend to start documenting, my life and tech experiences.
+I invite you to read my blog, where (hopefully) I'll write about tech & business stuff.
