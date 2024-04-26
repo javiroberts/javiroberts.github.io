@@ -48,6 +48,10 @@ params:
   hiddenPostSummaryInHomePage: false
   math: false
 
+  subscribe: RSS
+
+  hiddenPostSummaryInHomePage: false
+
   links:
     - name: CV
       path: /cv

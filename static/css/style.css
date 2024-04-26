@@ -1,10 +1,10 @@
-html[theme='dark-mode'] {
-  filter: invert(1) hue-rotate(180deg);
-}
+/*
+  https://colorhunt.co/palette/4793afffc470dd57468b322c
+ */
 
 body {
   line-height: 1;
-  font: normal 15px/1.5em 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font: normal 15px/1.5em 'Open Sans', Helvetica, Arial, sans-serif;
   color: #404040;
   line-height: 1.75;
   letter-spacing: 0.008em;
@@ -144,17 +144,17 @@ nav.navigation a {
   top: 8px;
   right: 6px;
   padding: 8px 12px;
-  color: #4d79a2;
+  color: #4793af;
   font-size: 13px;
   line-height: 1.35;
   border-radius: 3px;
 }
 nav.navigation a:hover {
-  color: #66a0d5;
+  color: #ffc470;
 }
 
 nav.navigation a.button {
-  background: #4d79a2;
+  background: #4793af;
   color: #fff;
   margin-left: 12px;
 }
@@ -171,7 +171,7 @@ nav.navigation a.button {
     top: 8px;
     right: 6px;
     padding: 8px 8px;
-    color: #5badf0;
+    color: #4793af;
     font-size: 13px;
     line-height: 1.35;
     border-radius: 3px;
@@ -243,7 +243,7 @@ nav.navigation a.button {
 
 /* main content */
 .main {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Open Sans', sans-serif;
   width: 100%;
   margin: 0 auto;
 }
@@ -350,7 +350,7 @@ nav.navigation a.button {
 
 /* single page */
 #single {
-  font-family: 'Merriweather', serif;
+  font-family: 'Lora', serif;
   max-width: 680px;
   margin: 60px auto 0 auto;
   padding: 0 64px;

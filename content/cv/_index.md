@@ -11,12 +11,17 @@ summary: "Take a look at my resume."
 > - Proficient in Python, Javascript, and Golang, with expertise in technology and cloud infrastructure.
 > - Strong technical background and leadership skills with excellent communication abilities.
 > - Sold to  and managed customers such as Claro, AT&T and Cisco, amongst others.
-> - Led and structured 10x revenue growth for 2 consecutive years in the startup I funded.
+> - Led and structured 10x revenue growth for 2 consecutive years in the startup I founded.
 
 
 ## Work History
 
-### Wilab (Jan 2022 - Present) - COO & Head of Architecture
+### Wúru (Jun 2023 - Present) - CTO
+
+- Running the Product and Development teams.
+- Decisions related to product roadmap and features as well as tech steering.
+
+### Wilab (Jan 2022 - Mar 2023) - COO & Head of Architecture
 
 - Led 2 consecutive years of 10x revenue growth operations. Designed and implemented processes, KPIs, team cells and internal tools to ensure a healthy growth.
 - Provided visionary leadership as Head of Architecture, ensuring that all software development aligns with company objectives and guidelines.
