@@ -93,15 +93,15 @@ pre {
 .markdown-image img {
   max-width: 100%;
 }
-.anchor { 
-  font-size: 100%; 
-  visibility: hidden; 
+.anchor {
+  font-size: 100%;
+  visibility: hidden;
   color:silver;
 }
 h1:hover a,
 h2:hover a,
 h3:hover a,
-h4:hover a { 
+h4:hover a {
   visibility: visible
 }
 .highlight pre {
@@ -243,6 +243,7 @@ nav.navigation a.button {
 
 /* main content */
 .main {
+  font-family: 'Montserrat', sans-serif;
   width: 100%;
   margin: 0 auto;
 }
@@ -349,6 +350,7 @@ nav.navigation a.button {
 
 /* single page */
 #single {
+  font-family: 'Merriweather', serif;
   max-width: 680px;
   margin: 60px auto 0 auto;
   padding: 0 64px;
@@ -412,7 +414,7 @@ nav.navigation a.button {
 }
 
 #archive .group {
-  margin: 24px auto; 
+  margin: 24px auto;
 }
 #archive .group .key {
   font-size: 20px;
