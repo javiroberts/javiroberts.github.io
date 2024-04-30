@@ -9,7 +9,7 @@ summary: "How I will conduct code interviews from now on."
 
 During the last 2 or 3 weeks, I've had to conduct many code interviews for [Wúru](https://www.wuru.ai). This interviews usually last 45 minutes and consist of a 15-minute introduction with a technical talk and a 30-minute live coding session.
 
-Usually the transition from intro to live coding is usually a bit awkward because I have to explain the candidates that they should open their preferred text editor and be ready to compile a source file after the task is done. To avoid this roughness I devised this simple idea, that should fit my needs from now on.
+Usually the transition from intro to live coding is a bit awkward because I have to explain the candidates that they should open their preferred text editor and be ready to compile a source file after the task is done. To avoid this roughness I devised this simple idea, that should fit my needs from now on.
 
 I created a private **GitHub** repository, where I left a `README.md` file in the main branch. For each interview I conduct I will create a new branch with the date, and the name of the candidate (e.g. `20240924_javier-roberts`). With the branch created I checked it out and left the assignment in a `.txt` file in the root dir. This saved me the hassle of explaining constraints, limits and the actual problem-to-be-solved.
 
