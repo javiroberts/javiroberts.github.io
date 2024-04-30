@@ -10,9 +10,7 @@ draft: false
 summary: A post condensing my professional journey of the last 5 years.
 ---
 
-# Lessons Learned from Scaling a Startup
-
-Over the past five years, I've undergone a significant professional transformation, founding and growing my own startup. This experience has taught me valuable lessons and presented me with many challenges and opportunities for personal and professional growth. In this blog post, I'll share my story and the insights I've gained along the way, which I hope will be helpful to those who are considering starting their own business or seeking to learn from my experiences. So, without further ado, let's get started.
+Over the past five years, I've undergone a significant professional transformation, founding and growing my own startup. This experience has taught me valuable lessons and presented me with many challenges and opportunities for personal and professional growth. In this blog post, I'll share my story and the insights I've gained along the way, which I hope will be helpful to those who are considering starting their own business or seeking to learn from my experiences.
 
 ## About Wilab
 
@@ -22,7 +20,7 @@ I started as the CTO of the company, and was in charge of building a team, and d
 
 After that first customer, many other contracts started coming, and we even had to increase 4x our team capacity. Our ARR grew 10x for 2 consecutive years and we started facing new challenges, growth challenges. In this certain period of time the company started serving top tier customers such as Cisco and AT&T amongst others.
 
-This fast growth led to new challenges. More people to manage, means that you need more scalable and robust processes in the company, and as the person who was in charge of thinking about scalability and hires, this led me to a new role, COO. 
+This fast growth led to new challenges. More people to manage, means that you need more scalable and robust processes in the company, and as the person who was in charge of thinking about scalability and hires, this led me to a new role, COO.
 
 Some of the processes we designed as a team were:
 
@@ -36,19 +34,13 @@ It was a lovely challenge, and many lessons were learnt.
 
 ## Takeaways
 
-We’re about to go deep into the key takeaways of my experience and why I think that they may come in handy for you, if you’re in the process of building a company from scratch. If possible, some examples will be given in each of the bullet points that we’ll be going through.
-
 ### Async communications as the base
 
-Every company should try to stick to this principle. But wait, what does async communications mean?
+Every company should try to stick to this principle.
 
 Async communications, mean that a lag in the response between individual contributors in the company might exist. To make it clearer, take email for an example. This is one of the most basic forms of async communication out there, you write an email to your team and you can expect a delay in the response of each contributor. Other common forms are chat apps like Slack or Microsoft Teams, or not so common forms in apps like Trello, Jira or Google Docs, where communications also happen in an asynchronous manner.
 
-This is an amazing concept that enables some cool things to happen company wise.
-
-* Auto documented communication and information base
-* Metadata sharing
-* Loosely coupled teams
+This is an amazing concept that enables some cool things to happen company wise. Mostly, that the teams start communicating more, and time management is easier as you eliminate the need for many face to face meetings. Nonetheless when things get spicy a meeting is still a good idea.
 
 ### Tooling: As little as possible
 
@@ -87,4 +79,4 @@ This post is a really shallow pass over some of the challenges I personally face
 
 Nowadays my journey has diverted to new exciting and more personal projects. But all in all, I think that while I was there we managed to build great teams and products, and now I try to share some of that knowledge for anyone that might find it useful.
 
-In a near future I will try to share more of this experiences and go deeper in some of this topics. But for now, that’s all. Best of luck with what you’re doing!
+In a near future I will try to share more of this experiences and go deeper in some of this topics. But for now, that’s all.
