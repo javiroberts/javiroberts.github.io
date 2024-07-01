@@ -158,6 +158,9 @@ nav.navigation a.button {
   color: #fff;
   margin-left: 12px;
 }
+nav.navigation a.button:hover {
+  background: #ffc470;
+}
 @media (max-width: 700px) {
   nav.navigation {
     padding: 20px 10px 0 0;
