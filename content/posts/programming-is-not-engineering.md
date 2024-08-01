@@ -1,6 +1,6 @@
 ---
 title: "Programming is not engineering"
-date: 2024-06-13T13:17:00-03:00
+date: 2024-07-28T13:17:00-03:00
 tags:
   - careers
   - startups
