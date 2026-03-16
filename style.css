@@ -38,3 +38,18 @@ footer {
     font-style: italic;
     color: #666;
 }
+
+footer a {
+    color: inherit;
+    text-decoration-color: #ccc;
+}
+
+footer a:hover {
+    color: #000;
+    text-decoration-color: #000;
+    background-color: transparent;
+}
+
+footer p {
+    margin-bottom: 0;
+}
